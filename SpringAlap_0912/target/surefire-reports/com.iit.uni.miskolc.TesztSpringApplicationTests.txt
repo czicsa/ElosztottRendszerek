@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.iit.uni.miskolc.TesztSpringApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.782 sec - in com.iit.uni.miskolc.TesztSpringApplicationTests
