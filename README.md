@@ -1,4 +1,4 @@
 # ElosztottRendszerek
 MSc egyetemi projekt
 
-Pull request third try.
+Pull request fourth try.
