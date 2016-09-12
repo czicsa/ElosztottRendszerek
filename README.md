@@ -1,0 +1,2 @@
+# ElosztottRendszerek
+MSc egyetemi projekt
