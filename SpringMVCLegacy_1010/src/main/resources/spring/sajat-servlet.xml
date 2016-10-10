@@ -9,9 +9,9 @@
     <context:component-scan base-package="hu.meiit.model" />
     <context:annotation-config></context:annotation-config>
     <mvc:annotation-driven></mvc:annotation-driven>
-    <!-- <mvc:resources mapping="/resources/**" location="/resources/" /> -->
-    <bean
-            class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <mvc:default-servlet-handler />
+    <mvc:resources location="/css/**" mapping="/css/" />
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix">
             <value>/WEB-INF/jsp/</value>
         </property>
@@ -26,6 +26,14 @@
         <property name="basename" value="messages" />
     </bean>
 
+    <bean id="themeSource" class="org.springframework.ui.context.support.ResourceBundleThemeSource">
+        <property name="basenamePrefix" value="theme_" />
+    </bean>
+
+    <bean id="themeResolver" class="org.springframework.web.servlet.theme.SessionThemeResolver">
+        <property name="defaultThemeName" value="dark"/>
+    </bean>
+
     <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
         <property name="customEditors">
             <map>
@@ -34,4 +42,13 @@
             </map>
         </property>
     </bean>
+
+    <mvc:interceptors>
+        <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <property name="paramName" value="locale"/>
+        </bean>
+        <bean id="themeChangeInterceptor" class="org.springframework.web.servlet.theme.ThemeChangeInterceptor">
+            <property name="paramName" value="theme" />
+        </bean>
+    </mvc:interceptors>
 </beans>
