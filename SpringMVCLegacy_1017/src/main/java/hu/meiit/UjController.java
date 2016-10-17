@@ -1,20 +1,19 @@
 package hu.meiit;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.validation.Valid;
 
+import hu.meiit.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import hu.meiit.model.UserModelData;
@@ -39,10 +38,32 @@ public class UjController {
 	private String[] availableFields = new String[] { "username", "credit", "school", "favcol", "gend" };
 
 	@RequestMapping(value = "/status")
-	public ModelAndView generateStatusPage() {
-		ModelAndView mav = new ModelAndView("status");
-		mav.addObject("users", userManager.getUsers());
-		return mav;
+	public String generateStatusPage() {
+		return "status";
+	}
+
+	@RequestMapping(value = "/getUsers", method = { RequestMethod.GET }, produces= MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Collection<User> getUsers(){
+		return userManager.getUsers();
+	}
+
+	@RequestMapping(value = "/getColors", method = { RequestMethod.GET }, produces= MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<String> getColors(){
+		return availableColors;
+	}
+
+	@RequestMapping(value = "/getGenders", method = { RequestMethod.GET }, produces= MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<String> getGenders(){
+		return availableGenders;
+	}
+
+	@RequestMapping(value = "/getSchools", method = { RequestMethod.GET }, produces= MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Collection<String> getSchools(){
+		return availableSchools.values();
 	}
 
 	@RequestMapping(value = "/get-balance")
@@ -67,41 +88,8 @@ public class UjController {
 	}
 
 	@RequestMapping(value = "/newuser", method = { RequestMethod.POST })
-	public ModelAndView generateCreateUserHandler(@ModelAttribute() @Valid CreateUserDTO dto, BindingResult result) {
-
-		ModelAndView mav = new ModelAndView("newuser");
-		System.out.println(dto);
-		List<String> errors = new ArrayList<String>();
-		if (result.hasErrors()) {
-			manageErrors(errors, availableFields, result);
-
-			UserModelData data = new UserModelData();
-			data.setUsername(dto.getUsername());
-			data.setCredit(dto.getCredit());
-			if (dto.getSchool() != null) {
-				data.getSchool().add(dto.getSchool().name());
-			}
-
-			if (dto.getFavcol() != null) {
-				data.setFavcol(dto.getFavcol());
-			}
-
-			if (dto.getGend() != null) {
-				data.setGend(dto.getGend().name());
-			}
-
-			mav.addObject("pageData", data);
-			mav.addObject("schools", availableSchools);
-			mav.addObject("colors", availableColors);
-			mav.addObject("genders", availableGenders);
-			mav.addObject("status", errors);
-			return mav;
-		}
-
-		userManager.storeUser(dto);
-
-		mav.setViewName("redirect:/admin/status");
-		return mav;
+	public void generateCreateUserHandler(@ModelAttribute() CreateUserDTO dto) {
+		if(dto != null) userManager.storeUser(dto);
 	}
 
 	private UserModelData generateDefaultModelData() {

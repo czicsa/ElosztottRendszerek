@@ -4,7 +4,7 @@
 <head>
     <link rel="stylesheet" href="<spring:theme code="css"/>">
 </head>
-<body>
+<body ng-app="myApp" ng-controller="myCtrl">
     <img src="<spring:theme code="logo"/>" height="100px"/>
     <p><spring:message code="name" /></p>
 </body>

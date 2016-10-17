@@ -6,59 +6,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Insert title here</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 </head>
-<body>
-	<c:forEach var="stat" items="${status}">
-		<p>${stat}</p>
-	</c:forEach>
-	<c:url var="urika" value='/admin/newuser'></c:url>
-	<form:form  action="${urika}" modelAttribute="pageData"  method="POST">
+<body ng-app="myApp" ng-controller="myCtrl">
+	<form>
 		<label>Username:</label>
-		<form:input path="username"/> <br />
+		<input type="text" ng-model="user.username"/> <br />
 		<label>Credit</label>
-		<form:input path="credit"/> <br />
+		<input type="text" ng-model="user.credit"/> <br />
 		<br />
 		<label>Schools</label>
-		<form:select path="school" items="${schools}" multiple="false" > <br />	
-		</form:select>
-		<br />
-		<br />
+		<select>
+			<option ng-repeat="school in schools">{{school}}</option>
+		</select>
+		</br>
+		</br>
 		<label>Favourite color:</label>
-		<form:checkboxes items="${colors}" path="favcol"/>
-		<br />
-		<br /> 
+		<div ng-repeat="color in colors"><input type="checkbox" value="{{color}}" >{{color}}</div>
+		</br>
 		<label>Gender:</label>
-		<form:radiobuttons path="gend" items="${genders}"/>
-		
-		<input type="submit" value="Create">
-	</form:form>
-	<!--  
-	<form action="" method="post">
-		<input type="text" placeholder="ide nevet!" name="username" value="${username}">
-		<input type="text" name="credit" value="${credit}"> <br />
-		
-		<label>Iskolai végzettség:</label><br />
-		
-		<select name="school">
-			<option value="HIGHSCHOOL" ${HIGHSCHOOL}>Középiskola</option>
-		 	<option value="COLLEGE" ${COLLEGE}>Főiskola</option>
-		  	<option value="UNIVERSITY" ${UNIVERSITY}>Egyetem</option>
-		</select><br />
-		
-		<label>Kedvenc színek:</label> <br />
-		Red <input type="checkbox" name="favcol" value="red" ${RED}> <br />
-		Green <input type="checkbox" name="favcol" value="green" ${GREEN}> <br />
-		Blue <input type="checkbox" name="favcol" value="blue" ${BLUE}> <br />
-		
-		<label>Nem:</label><br />
-		
-		<input type="radio" name="gend" value="male" ${male}> Male<br> 
-		<input type="radio" name="gend" value="female" ${female}> Female<br>
+		<div ng-repeat="gender in genders"><input type="radio" name="gender" value="{{gender}}"/>{{gender}}</div>
 
-		<input type="submit">
+		<input type="button" ng-click="save()" value="Create">
 	</form>
-	-->
+	<script>
+		var app = angular.module('myApp', []);
+		app.controller('myCtrl', function($http, $scope) {
+			$scope.user = {username: "", credit: ""};
+			$scope.save = function() {
+				$http.post("newuser", {dto: $scope.user});
+			}
+
+			$scope.getColors = function() {
+				$http.get("getColors").then(
+						function(response) {
+							$scope.colors = response.data;
+						},
+						function(response){
+
+						}
+				);
+			}
+
+			$scope.getGenders = function() {
+				$http.get("getGenders").then(
+						function(response) {
+							$scope.genders = response.data;
+						},
+						function(response){
+
+						}
+				);
+			}
+
+			$scope.getSchools = function() {
+				$http.get("getSchools").then(
+						function(response) {
+							$scope.schools = response.data;
+						},
+						function(response){
+
+						}
+				);
+			}
+
+			$scope.getColors();
+			$scope.getGenders();
+			$scope.getSchools();
+		});
+	</script>
 </body>
 </html>

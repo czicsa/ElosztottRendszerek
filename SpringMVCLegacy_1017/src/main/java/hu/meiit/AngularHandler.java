@@ -17,6 +17,7 @@ public class AngularHandler {
     public String messagePage() {
         return "angular";
     }
+
     @RequestMapping(value = "/getJson", method = { RequestMethod.GET }, produces= MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public List<String> getJson() {
