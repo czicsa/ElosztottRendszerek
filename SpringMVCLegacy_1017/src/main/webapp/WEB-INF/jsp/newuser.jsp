@@ -18,8 +18,7 @@
 		<input type="text" ng-model="user.credit"/> <br />
 		<br />
 		<label>Schools</label>
-		<select>
-			<option ng-repeat="school in schools">{{school}}</option>
+		<select ng-options="school for school in schools" ng-model="user.school">
 		</select>
 		</br>
 		</br>
@@ -34,12 +33,9 @@
 	<script>
 		var app = angular.module('myApp', []);
 		app.controller('myCtrl', function($http, $scope) {
-			$scope.user = {username: "", credit: ""};
-			$scope.save = function() {
-				$http.post("newuser", {dto: $scope.user});
-			}
 
-			$scope.getColors = function() {
+			init = function(){
+				$scope.user = {username: "", credit: "", school: "", favcol: [], gend: []};
 				$http.get("getColors").then(
 						function(response) {
 							$scope.colors = response.data;
@@ -48,9 +44,6 @@
 
 						}
 				);
-			}
-
-			$scope.getGenders = function() {
 				$http.get("getGenders").then(
 						function(response) {
 							$scope.genders = response.data;
@@ -59,9 +52,6 @@
 
 						}
 				);
-			}
-
-			$scope.getSchools = function() {
 				$http.get("getSchools").then(
 						function(response) {
 							$scope.schools = response.data;
@@ -70,11 +60,12 @@
 
 						}
 				);
-			}
+			};
 
-			$scope.getColors();
-			$scope.getGenders();
-			$scope.getSchools();
+			$scope.save = function() {
+				$http.post("newuser", $scope.user);
+			};
+			init();
 		});
 	</script>
 </body>

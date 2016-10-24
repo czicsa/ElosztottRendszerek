@@ -10,10 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import hu.meiit.model.UserModelData;
@@ -74,21 +71,12 @@ public class UjController {
 	}
 
 	@RequestMapping(value = "/newuser", method = { RequestMethod.GET })
-	public ModelAndView generateNewUserPage() {
-		ModelAndView mav = new ModelAndView("newuser");
-		UserModelData data = new UserModelData();
-		data.setUsername("");
-		data.setCredit("");
-		data.getSchool().add("HIGHSCHOOL");
-		mav.addObject("pageData", data);
-		mav.addObject("schools", availableSchools);
-		mav.addObject("colors", availableColors);
-		mav.addObject("genders", availableGenders);
-		return mav;
+	public String generateNewUserPage() {
+		return "newuser";
 	}
 
 	@RequestMapping(value = "/newuser", method = { RequestMethod.POST })
-	public void generateCreateUserHandler(@ModelAttribute() CreateUserDTO dto) {
+	public void generateCreateUserHandler(@RequestBody CreateUserDTO dto) {
 		if(dto != null) userManager.storeUser(dto);
 	}
 
