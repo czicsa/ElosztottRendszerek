@@ -7,7 +7,6 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
@@ -15,7 +14,7 @@
 
 	<title>Insert title here</title>
 	<script type="text/javascript">
-		var appReg = angular.module("register", ['ngMaterial']);
+		var appReg = angular.module("register", ['ngMaterial', 'ngMessages']);
 		appReg.controller("regController", function($scope, $http, $mdToast, $mdDialog) {
 			$scope.register = function() {
 				var elements = [];
@@ -35,34 +34,31 @@
 						$scope.showSimpleToast('A mentés sikeres!');
 						$scope.rusername = "";
 						$scope.rcredit = "";
-						$scope.rschool = "";
+						if($scope.schools.length > 0) $scope.rschool = $scope.schools[0].key;
 						for ( var index in $scope.colors) {
 							$scope.colors[index].enabled = false;
 						}
-						$scope.sex = "MALE"
+						$scope.sex = "MALE";
+						$scope.registrationForm.$setUntouched();
 						$scope.getUsers();
 					} else {
 						$scope.showSimpleToast('Valami hiba történt!');
 					}
 				});
-			}
-			$scope.schools;
+			};
+
 			$scope.elements = function() {
 				$http.get("getschools").then(function(response) {
 					$scope.schools = response.data;
+					if($scope.schools.length > 0) $scope.rschool = $scope.schools[0].key;
 				});
 			};
 			$scope.getColors = function() {
 				$http.get("getcolors").then(function(response) {
 					$scope.colors = response.data;
-					/*var length = response.data.length;
-					var data = response.data;
-					for (var i = 0; i < length; i++) {
-						$scope.colors[data[i].colorCode] = data[i].enabled;
-					}*/
 
 				});
-			}
+			};
 
 			$scope.getUsers = function() {
 				$http.get("getusers").then(function(response) {
@@ -70,7 +66,7 @@
 					$scope.users = response.data;
 
 				});
-			}
+			};
 			$scope.getUsers();
 			$scope.sex = "MALE";
 			$scope.getColors();
@@ -83,7 +79,7 @@
 							$scope.showSimpleToast('A törlés sikeres!')
 							$scope.getUsers();
 				});
-			}
+			};
 
 			var last = {
 				bottom: false,
@@ -142,39 +138,52 @@
 	</script>
 
 </head>
-<body style="overflow: hidden;">
+<body>
 	<div data-ng-app="register" data-ng-controller="regController">
 		<h2>Registration</h2>
-		<div>
+		<form name="registrationForm">
+			<div>
+				<md-input-container>
+					<label>Username</label><input name="username" type="text" data-ng-model="rusername" data-ng-minlength="3" data-ng-maxlength="8" required><br />
+				</md-input-container>
+			</div>
+			<div ng-show="registrationForm.username.$touched" ng-messages="registrationForm.username.$error">
+				<p ng-message="minlength">Your name is too short.</p>
+				<p ng-message="maxlength">Your name is too long.</p>
+				<p ng-message="required">Your name is required.</p>
+			</div>
+			<div>
+				<md-input-container>
+					<label>Credit</label> <input name="credit" type="text" data-ng-model="rcredit" required><br />
+				</md-input-container>
+			</div>
+			<div ng-show="registrationForm.credit.$touched" ng-messages="registrationForm.credit.$error">
+				<p ng-message="required">Your credit is required.</p>
+			</div>
 			<md-input-container>
-				<label>Username</label> <input type="text" data-ng-model="rusername"><br />
+				<label>Iskola</label>
+				<md-select name="school" ng-model="rschool" class="md-no-underline" required md-no-asterisk="false" required>
+					<md-option value="{{school.key}}" data-ng-repeat="school in schools">{{school.value}}</md-option>
+				</md-select>
 			</md-input-container>
-		</div>
-		<div>
-			<md-input-container>
-				<label>Credit</label> <input type="text" data-ng-model="rcredit"><br />
-			</md-input-container>
-		</div>
-		<md-input-container>
-			<label>Iskola</label>
-			<md-select ng-model="rschool" class="md-no-underline" required md-no-asterisk="false">
-				<md-option value="{{school.key}}" data-ng-repeat="school in schools">{{school.value}}</md-option>
-			</md-select>
-		</md-input-container>
-		<div class="demo-select-all-checkboxes" flex="100" ng-repeat="color in colors">
-			<md-checkbox ng-checked="color.enabled" ng-click="color.enabled = !color.enabled">
-				{{ color.colorCode }}
-			</md-checkbox>
-		</div>
-		<md-radio-group ng-model="sex">
+			<div ng-show="registrationForm.school.$touched" ng-messages="registrationForm.school.$error">
+				<p ng-message="required">Your school is required.</p>
+			</div>
+			<div class="demo-select-all-checkboxes" flex="100" ng-repeat="color in colors">
+				<md-checkbox ng-checked="color.enabled" ng-click="color.enabled = !color.enabled">
+					{{ color.colorCode }}
+				</md-checkbox>
+			</div>
+			<md-radio-group ng-model="sex">
 
-			<md-radio-button value="MALE">Male</md-radio-button>
-			<md-radio-button value="FEMALE"> Female </md-radio-button>
+				<md-radio-button value="MALE">Male</md-radio-button>
+				<md-radio-button value="FEMALE"> Female </md-radio-button>
 
-		</md-radio-group>
+			</md-radio-group>
 
 
-		<md-button class="md-raised"data-ng-click="register()">Register</md-button>
+			<md-button class="md-raised"data-ng-click="register()" ng-disabled="registrationForm.$invalid">Register</md-button>
+		</form>
 
 		<h2>Users:</h2>
 		<div class='md-padding' layout="row">
