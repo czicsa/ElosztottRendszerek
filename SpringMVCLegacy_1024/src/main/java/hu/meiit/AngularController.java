@@ -89,6 +89,12 @@ public class AngularController {
 		return this.colors;
 	}
 
+	@RequestMapping(value = "/deleteuser")
+	@ResponseBody
+	public void deleteUserByUsername(@RequestBody String username) {
+		userManager.deleteuser(username);
+	}
+
 	private List<DataPairDTO> generateSchools() {
 		List<DataPairDTO> schools = new ArrayList<DataPairDTO>(3);
 		DataPairDTO school = new DataPairDTO("HIGHSCHOOL", "Highschool");
